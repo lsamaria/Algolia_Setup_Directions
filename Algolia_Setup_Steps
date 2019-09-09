@@ -159,18 +159,24 @@ DON'T USE- 10G. $ npm install -g firebase-tools (possibly add --save to the end)
 11.Create a Heroku instance from terminal
 11A. $ heroku login --interactive (you will have to enter your sign up email and the password will be invisible)
 11B. $ heroku create <your_iOS_APP_NAME>
-11C. $ git init
-11D. $ touch .gitignore (add .env to it)
-11E. $ git add .
-11F. $ git commit -m "Initial Commit Algolia Configuration Files" 
+11C. $ git status
+11D. $ git init
+11E. $ git status
+11F. $ touch .gitignore (add .env to it)
+11G. $ git add .
+11J. $ git commit -m "Initial Commit Algolia Configuration Files" 
        //***IMPORTANT*** if problem possibly delete grpc folder in node_modules
-11G. $ heroku git:remote -a  <your_heroku_app_name_from_step_11B.> if it doesn't work then try $ git remote add heroku <your_heroku_app_name>
-11H. $ git push heroku master
-11I. $ heroku ps:scale worker=1
+11I. $ heroku git:remote -a  <your_heroku_app_name_from_step_11B.> if it doesn't work then try $ git remote add heroku <your_heroku_app_name>
+11J. $ git push heroku master
+11K. $ heroku ps:scale worker=1
 
-11J. $ npm-install-missing //this checks to see if any modules are missing
+11L. $ npm-install-missing //this checks to see if any modules are missing
 
 =======WHEN UPDATING FILES=======
+
+// undo last commit if a mistake was made
+$ git reset --soft HEAD~1
+
 $ git add .
 $ git status
 $ git commit -m "blaaa"
