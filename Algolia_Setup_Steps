@@ -1,0 +1,275 @@
+*************************************************************DIRECTIONS*************************************************************
+
+1. Setup Procedures
+
+1A. Download and install Node.js from https://nodejs.org/en/download/
+1B. Download and install the Heroku Toolbelt (it's been renamed Heroku CLI) at https://devcenter.heroku.com/articles/heroku-cli. FYI I used the OS X Installer and not OS X Homebrew.
+1C. After you've downloaded and installed the Heroku Toolbelt/CLI log on to Heroku.com and create an account. You’ll create an app in Step 11B
+1D. Create an account at Algolia.com
+///////////1E. Install the Algolia cocoapod: add pod 'AlgoliaSearch-Client-Swift', '~> 5.0' // this has been changed to the below
+1E. Install the Algolia cocoapod: pod 'InstantSearchClient', '~> 7.0
+1F. Install the SwiftyJson pod: pod 'SwiftyJSON'
+1G. Install the AFNetworking pod: pod 'AFNetworking'
+1G. It would probably be best if you use Sublime Text to open files so you can matchup the file line numbers I reference
+
+// ***outdated don't use***
+FYI this is in written in Swift 2.2. If your using that then
+Algolia pod is: pod 'AlgoliaSearch-Client-Swift', '~> 3.3'
+SwiftyJson pod is: pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :branch => 'swift2'
+AFNetworking pod: pod 'AFNetworking', '~> 2.0'
+// ***outdated don't use***
+
+2. Go to terminal and cd to your main Xcode project folder then run: pod init
+
+     ***************************************************************************************
+     ***************************************************************************************
+************************      Algolia Directions START HERE        **********************************
+************************      Algolia Directions Start HERE        **********************************
+     ***************************************************************************************
+************************         STEPS 3-7C and 10A-12A            **********************************
+     ***************************************************************************************
+
+3. On your desktop create a folder named: algolia_search_folder (keep the name lowercase for step 3D’s “name” key) then drag it into your main Xcode project folder
+
+//**Important** Steps 4 - 11 all happen specifically inside the **algolia_search_folder** and not your main Xcode project folder or you’ll have probs
+
+4A. Go to terminal and cd to the algloia_search_folder
+4B. run: node -v (copy this version # without the letter v because you will need it for step 4C)
+4C. run: npm init
+4D. Your going to get prompts that say-
+
+name: (algolia_search_folder) -just press enter (if any of the letters are capital it won’t allow it. If anything is uppercase just retype it in lowercase)
+version: (1.0.0)  just press enter
+description: enter Algolia Files or whatever the description is you want. Do not use quotes
+entry point: (index.js) enter app.js (no quotes)
+test command: just press enter
+git repository: just press enter
+keywords: just press enter
+author: enter: your name (no quotes)
+license: (ISC) just press enter
+
+4E. You should get a response with the file path and the key/value objects for everything you just typed and a question that says “Is this ok?”. If it is type in the letter y (no quotes) and press enter
+
+5A. Go to the algolia_search_folder and you’ll see a package.json file in it. Open it.
+5B. on line 10 "license": "ISC" enter a comma at the end and press enter
+5C. on the new line 11 enter:
+"engines": {
+    "node": “whatever node_version_you_got_from_step_4B”
+  }
+5C.-example:
+"license": "ISC", //line 10
+  "engines": {    //line 11
+    "node": "7.8.0"  //line 12
+  }
+
+5D. FYI we’re still inside the file. Inside the the “scripts:” object on line 7 after …exit 1" add a comma at the end
+5E. On line 8  enter "start": "node app.js"
+5D & 5E example:
+"test": "echo \"Error: no test specified\" && exit 1", //line 7
+    "start": "node app.js" //line 8
+}
+
+6A. Inside Sublime create a file named Procfile with no extension. Inside the file on line 1 enter: worker: node ./app.js
+6B. Make sure the Profile is saved inside the algolia_search_folder
+
+7A. Create a file named app.js and make sure the extension is .js
+7B. At the top of the file add: 
+console.log('>>>Algolia Is Indexing…<<<'); //you can actually type in anything you want or skip this but it’s good for step ???
+console.log(' ');
+7C. Make sure the app.js file is saved inside the algolia_search_folder
+7D. Create a .env file using $ touch .env and then add the variables you want to use to it. DO NOT CREATE THE .ENV FILE INSIDE SUBLIME OR VISUAL STUDIO!!!!! 
+7E. Create a new file by going to terminal, and make sure your still inside the algolia folder, then type
+$ touch .env
+$ open .env
+
+7G. Inside the .env file add then add the matching values inside the Heroku app after its created:
+
+FIREBASE_PROJECT_ID=//GooglePlist -PROJECT_ID
+
+FIREBASE_CLIENT_EMAIL=//Inside Service Account
+
+FIREBASE_DATABASE_URL=//Firebase > Database > the url
+
+MY_CUSTOM_TOKEN=//whatever name you placed inside the app.js file as your custom auth token
+
+FIREBASE_API_KEY=//GooglePlist -API_KEY
+
+FIREBASE_AUTH_DOMAIN=//Firebase > Authentication > Sign-In Methods > Authorized Domains > **SECOND FIELD
+
+FIREBASE_STORAGE_BUCKET=//GooglePlist -STORAGE_BUCKET or Firebase > Storage > the url
+
+FIREBASE_MESSENGING_SENDER_ID=//GooglePlist -GCM_SENDER_ID
+
+FIREBASE_PRIVATE_KEY=//Service Account
+
+ALGOLIA_APP_ID=//Algolia Application ID
+
+ALGOLIA_ADMIN_API_KEY=//Algolia Admin API Key (private key)
+
+ALGOLIA_INDEX_NAME=<name of main index your searching eg. sneakers>
+
+ALGOLIA_TEMP_INDEX_NAME=<supplemental index name eg. sneakers123>
+
+ALGOLIA_EXCLUDE_FIRST_VALUE=<exclude nodes under the index you don't want indexed eg. posts>
+
+ALGOLIA_EXCLUDE_SECOND_VALUE=<exclude nodes under the index you don't want indexed eg. userNames>
+
+ALGOLIA_EXCLUDE_THIRD_VALUE=<exclude nodes under the index you don't want indexed eg. someotherChildRefName>
+
+8. Comments
+Log into Firebase, inside the console of your FB project, go to the Project's Settings (little round icon next to Overview), inside Project Settings choose SERVICE ACCOUNTS, go to the section Firebase Admin SDK. There are 2 things you have to do here. 1. Find and copy your Firebase service account, it looks like firebase-admin-81772@sneakersearch-az12.iam.gserviceaccount.com and 2. at the bottom of the page you will have to click the Generate New Private Key button, it will download an Unknown. Rename it service-account.json and save it anywhere you want (it can be outside the project). If it names the file something besides Unknown just rename that to service-account.json. You will need 2 of the values from the Unknown file for step 9B. The values are on lines 5-private_key and 6-clientEmail
+
+8. Directions
+8A. Log into your Firebase Console's SERVICE ACCOUNTS page and click the Generate New Private Key button to download an Unknown file.
+
+8B. Rename the Unknown file to service-account.json
+
+8C. Inside the service-account.json file copy the values from the keys on lines 5-private_key and 6-clientEmail
+
+9. Comments 
+You must add Firebase Server SDK Credentials to your project
+
+9.Directions
+9A. Follow the directions from https://firebase.google.com/docs/server/setup. Use the bottom inline part
+
+9B. Copy what's inside the section Initialize the SDK and initialize the fields with these values:
+
+var admin = require("firebase-admin”);//your going to install this on step 10A
+
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: "sneakersearch-az12", //use your PROJECT_ID
+    clientEmail: "firebase-admin-81772@sneakersearch-az12.iam.gserviceaccount.com", //clientEmail: is on  line 6 in the Unknown file
+    privateKey: "-----BEGIN PRIVATE KEY-----\nCYchgacopuyvpc017tEpcl889ljbsiugr4ygrphvuygpuy...mutli-lines...\n-----END PRIVATE KEY-----\n" //privateKey: is on line 5 in the Unknown file
+  }),
+  databaseURL: "https://sneakersearch-az12.firebaseio.com" //use your DATABASE_URL
+});
+9C. Inside the algolia_search_folder folder, open the app.js file, paste/save the above code inside of it with the correct values at on line 4 
+
+10A. Go back to terminal and make sure your inside the algolia_search_folder by running: pwd You then have to run the following commands
+10B. $ npm install —-save
+10B. $ npm install dotenv --save
+10F. $ npm install algoliasearch --save
+10C. $ npm install firebase --save
+10D. $ npm install firebase-admin --save
+10E. $ npm install nodejs-latest
+10F. $ npm install -g npm-install-missing // if permisson error use: $ sudo npm install -g npm-install-missing
+DON'T USE- 10G. $ npm install -g firebase-tools (possibly add --save to the end)***THIS IS FOR THE FIREBASE CLI YOU DON'T NEED THIS
+
+11.Create a Heroku instance from terminal
+11A. $ heroku login --interactive (you will have to enter your sign up email and the password will be invisible)
+11B. $ heroku create <your_iOS_APP_NAME>
+11C. $ git init
+11D. $ touch .gitignore (add .env to it)
+11E. $ git add .
+11F. $ git commit -m "Initial Commit Algolia Configuration Files" 
+       //***IMPORTANT*** if problem possibly delete grpc folder in node_modules
+11G. $ heroku git:remote -a  <your_heroku_app_name_from_step_11B.> if it doesn't work then try $ git remote add heroku <your_heroku_app_name>
+11H. $ git push heroku master
+11I. $ heroku ps:scale worker=1
+
+11J. $ npm-install-missing //this checks to see if any modules are missing
+
+=======WHEN UPDATING FILES=======
+$ git add .
+$ git status
+$ git commit -m "blaaa"
+$ git pull heroku master // *** optional ***
+$ git push heroku master
+$ heroku restart <<<<<<<<<<<IMPORTANT
+$ heroku logs 
+
+     ***************************************************************************************
+     ***************************************************************************************
+************************      Algolia Directions ENDS HERE        **********************************
+************************      Algolia Directions ENDS HERE        **********************************
+     ***************************************************************************************
+************************         STEPS 3-7C and 10A-12A            **********************************
+     ***************************************************************************************
+
+12A. Open your app.js file and add all the code from https://www.algolia.com/doc/guides/integrations/firebase-algolia/
+*********************
+https://www.algolia.com/doc/tutorials/indexing/3rd-party-service/firebase-algolia/
+
+
+git remote add heroku <Git URL>
+heroku ps:scale --app APP
+
+//--GET HEROKU INFO
+heroku apps:info --buildings311
+git remote -v 
+
+//--ERASE HEROKU
+sudo chown -R $(whoami):admin /usr/local
+rm -rf /usr/local/heroku
+rm -rf ~/.local/share/heroku ~/.config/heroku ~/Library/Caches/heroku
+
+
+google >>>firebase create custom token node.js
+
+-https://medium.com/@igorkhomenko/how-to-validate-firebase-id-token-in-ruby-23f4f54c89ab
+
+-http://codetain.eu/2017/02/08/firebase-authentication-with-custom-token
+
+
+*************************************************************DIRECTIONS*************************************************************
+
+https://firebase.google.com/docs/admin/setup
+https://firebase.google.com/support/guides/firebase-web
+https://firebase.google.com/docs/web/setup#add_firebase_to_your_app
+
+npm uninstall firebase
+npm install --save firebase@2.3.2
+npm install --save firebase@2.2.7
+
+
+https://firebase.google.com/docs/admin/setup
+https://firebase.google.com/docs/web/setup#add_firebase_to_your_app
+
+npm install firebase --save
+npm install algoliasearch --save
+
+npm uninstall firebase
+npm un --save firebase
+npm i --save firebase
+npm install --save firebase@2.3.2
+npm install --save firebase@2.2.7
+
+
+heroku apps:rename new_name --app old-app-name  // change heroku app name
+
+heroku apps:info            //gets your Heroku credentials and other info
+heroku config               //gets all your environment variables
+heroku config | grep BONSAI //gets only your bonsai url
+heroku info --app <APP-NAME> //i.e. whatever the name of your app is
+git ls-remote 
+
+
+
+curl -XGET https://ic6hrc10:9u4a17tz62y9aywt@alder-785661.us-east-1.bonsaisearch.net/firebase?pretty
+curl -XGET https://ic6hrc10:9u4a17tz62y9aywt@alder-785661.us-east-1.bonsaisearch.net/firebase/_mappings?pretty
+
+curl -XPOST https://ic6hrc10:9u4a17tz62y9aywt@alder-785661.us-east-1.bonsaisearch.net/firebase
+curl -XPOST https://ic6hrc10:9u4a17tz62y9aywt@alder-785661.us-east-1.bonsaisearch.net/firebase/sneakers/_mappings -d@sneakerfile.json
+curl -X DELETE https://ic6hrc10:9u4a17tz62y9aywt@alder-785661.us-east-1.bonsaisearch.net/firebase
+
+npm install <pkg> --save
+heroku keys:add
+heroku help //help command
+heroku status //status of the Heroku platform
+heroku ps //manage dynos (dynos, workers)
+heroku logs //displays 100 logs
+heroku logs --tail //displays realtime logs
+heroku logs --tail | grep worker //displays logs about the worker dyno
+heroku ps:restart //reboots the app
+heroku ps -a <app name> //lets you know how many dyno hours you have left and shows info about your dynos
+heroku config:get BONSAI_URL --app <app name> //gets only your bonsai url
+heroku config | grep BONSAI //also gets only your bonsai url
+heroku config //gets all your environment variables
+heroku apps:info //gets your Heroku credentials and other info
+curl -XGET <BONSAI_URL>/firebase?pretty //gets all your ES info
+curl -XGET <BONSAI_URL>/firebase/_mappings?pretty //gets your ES _mappings info
+heroku apps
+
+
+============================================================
